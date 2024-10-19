@@ -1,6 +1,6 @@
 {
   "name": "uws-cors",
-  "version": "0.0.2",
+  "version": "1.0.0",
   "license": "MIT",
   "packageManager": "yarn@4.5.1",
   "type": "module",
