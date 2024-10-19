@@ -13,25 +13,29 @@ describe('Credentials', () => {
     app.close()
   })
 
-  it('Allow credential', async () => {
+  it('Allow credential', (_, done) => {
     app = cors(App(), {
       credentials: true
     })
       .get('/', (res) => { res.end('HI') })
-      .listen(port, () => { })
-
-    const res = await req('/')
-    strictEqual(res.headers['access-control-allow-credentials'], 'true')
+      .listen(port, async (listenSocket) => {
+        if (!listenSocket) throw new Error('Failed to listen')
+        const res = await req('/')
+        strictEqual(res.headers['access-control-allow-credentials'], 'true')
+        done()
+      })
   })
 
-  it('Disallow credential', async () => {
+  it('Disallow credential', (_, done) => {
     app = cors(App(), {
       credentials: false
     })
       .get('/', (res) => { res.end('HI') })
-      .listen(port, () => { })
-
-    const res = await req('/')
-    strictEqual(res.headers['access-control-allow-credentials'], undefined)
+      .listen(port, async (listenSocket) => {
+        if (!listenSocket) throw new Error('Failed to listen')
+        const res = await req('/')
+        strictEqual(res.headers['access-control-allow-credentials'], undefined)
+        done()
+      })
   })
 })

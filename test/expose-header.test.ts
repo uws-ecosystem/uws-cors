@@ -13,25 +13,29 @@ describe('Expose Headers', () => {
     app.close()
   })
 
-  it('Expose single header', async () => {
+  it('Expose single header', (_, done) => {
     app = cors(App(), {
       exposeHeaders: 'Content-Type'
     })
       .get('/', (res) => { res.end('HI') })
-      .listen(port, () => { })
-
-    const res = await req('/')
-    strictEqual(res.headers['access-control-expose-headers'], 'Content-Type')
+      .listen(port, async (listenSocket) => {
+        if (!listenSocket) throw new Error('Failed to listen')
+        const res = await req('/')
+        strictEqual(res.headers['access-control-expose-headers'], 'Content-Type')
+        done()
+      })
   })
 
-  it('Expose array', async () => {
+  it('Expose array', (_, done) => {
     app = cors(App(), {
       exposeHeaders: ['Content-Type', 'X-Imaginary-Value']
     })
       .get('/', (res) => { res.end('HI') })
-      .listen(port, () => { })
-
-    const res = await req('/')
-    strictEqual(res.headers['access-control-expose-headers'], 'Content-Type, X-Imaginary-Value')
+      .listen(port, async (listenSocket) => {
+        if (!listenSocket) throw new Error('Failed to listen')
+        const res = await req('/')
+        strictEqual(res.headers['access-control-expose-headers'], 'Content-Type, X-Imaginary-Value')
+        done()
+      })
   })
 })

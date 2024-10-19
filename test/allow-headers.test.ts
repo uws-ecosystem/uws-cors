@@ -13,25 +13,29 @@ describe('Allowed Headers', () => {
     app.close()
   })
 
-  it('Accept single header', async () => {
+  it('Accept single header', (_, done) => {
     app = cors(App(), {
       allowedHeaders: 'Content-Type'
     })
       .get('/', (res) => { res.end('HI') })
-      .listen(port, () => { })
-
-    const res = await req('/')
-    strictEqual(res.headers['access-control-allow-headers'], 'Content-Type')
+      .listen(port, async (listenSocket) => {
+        if (!listenSocket) throw new Error('Failed to listen')
+        const res = await req('/')
+        strictEqual(res.headers['access-control-allow-headers'], 'Content-Type')
+        done()
+      })
   })
 
-  it('Accept array', async () => {
+  it('Accept array', (_, done) => {
     app = cors(App(), {
       allowedHeaders: ['Content-Type', 'X-Imaginary-Value']
     })
       .get('/', (res) => { res.end('HI') })
-      .listen(port, () => { })
-
-    const res = await req('/')
-    strictEqual(res.headers['access-control-allow-headers'], 'Content-Type, X-Imaginary-Value')
+      .listen(port, async (listenSocket) => {
+        if (!listenSocket) throw new Error('Failed to listen')
+        const res = await req('/')
+        strictEqual(res.headers['access-control-allow-headers'], 'Content-Type, X-Imaginary-Value')
+        done()
+      })
   })
 })

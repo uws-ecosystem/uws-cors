@@ -13,85 +13,95 @@ describe('Origin', () => {
     app.close()
   })
 
-  it('Accept string', async () => {
+  it('Accept string', (_, done) => {
     app = cors(App(), {
       origin: 'saltyaom.com'
     })
       .get('/', (res) => { res.end('A') })
-      .listen(port, () => { })
-
-    const res = await req('/', {
-      origin: 'https://saltyaom.com'
-    })
-
-    strictEqual(res.headers['access-control-allow-origin'], 'https://saltyaom.com')
+      .listen(port, async (listenSocket) => {
+        if (!listenSocket) throw new Error('Failed to listen')
+        const res = await req('/', {
+          origin: 'https://saltyaom.com'
+        })
+        strictEqual(res.headers['access-control-allow-origin'], 'https://saltyaom.com')
+        done()
+      })
   })
 
-  it('Accept boolean', async () => {
-    app = cors(App(), {
-      origin: true
-    })
-      .get('/', (res) => { res.end('HI') })
-      .listen(port, () => { })
-
-    const res = await req('/')
-    strictEqual(res.headers['access-control-allow-origin'], '*')
-  })
-
-  it('Accept RegExp', async () => {
-    app = cors(App(), {
-      origin: /\.com/g
-    })
-      .get('/', (res) => { res.end('HI') })
-      .listen(port, () => { })
-
-    const notAllowed = await req('/', {
-      Origin: 'https://example.org'
-    })
-    const allowed = await req('/', {
-      Origin: 'https://example.com'
-    })
-    strictEqual(notAllowed.headers['access-control-allow-origin'], undefined)
-    strictEqual(allowed.headers['access-control-allow-origin'], 'https://example.com')
-  })
-
-  it('Accept Function', async () => {
-    app = cors(App(), {
-      origin: () => true
-    })
-      .get('/', (res) => { res.end('HI') })
-      .listen(port, () => { })
-
-    const res = await req('/', {
-      Origin: 'https://example.com'
-    })
-    strictEqual(res.headers['access-control-allow-origin'], 'https://example.com')
-  })
-
-  it('Accept string[]', async () => {
+  it('Accept string[]', (_, done) => {
     app = cors(App(), {
       origin: ['gehenna.sh', 'saltyaom.com']
     })
       .get('/', (res) => { res.end('A') })
-      .listen(port, () => { })
-
-    const res = await req('/', {
-      origin: 'https://saltyaom.com'
-    })
-
-    strictEqual(res.headers['access-control-allow-origin'], 'https://saltyaom.com')
+      .listen(port, async (listenSocket) => {
+        if (!listenSocket) throw new Error('Failed to listen')
+        const res = await req('/', {
+          origin: 'https://saltyaom.com'
+        })
+        strictEqual(res.headers['access-control-allow-origin'], 'https://saltyaom.com')
+        done()
+      })
   })
 
-  it('Accept Function[]', async () => {
+  it('Accept Function', (_, done) => {
+    app = cors(App(), {
+      origin: () => true
+    })
+      .get('/', (res) => { res.end('HI') })
+      .listen(port, async (listenSocket) => {
+        if (!listenSocket) throw new Error('Failed to listen')
+        const res = await req('/', {
+          Origin: 'https://example.com'
+        })
+        strictEqual(res.headers['access-control-allow-origin'], 'https://example.com')
+        done()
+      })
+  })
+
+  it('Accept Function[]', (_, done) => {
     app = cors(App(), {
       origin: ['https://demo.app', () => false, /.com/g]
     })
       .get('/', (res) => { res.end('HI') })
-      .listen(port, () => { })
+      .listen(port, async (listenSocket) => {
+        if (!listenSocket) throw new Error('Failed to listen')
+        const res = await req('/', {
+          Origin: 'https://example.com'
+        })
+        strictEqual(res.headers['access-control-allow-origin'], 'https://example.com')
+        done()
+      })
+  })
 
-    const res = await req('/', {
-      Origin: 'https://example.com'
+  it('Accept boolean', (_, done) => {
+    app = cors(App(), {
+      origin: true
     })
-    strictEqual(res.headers['access-control-allow-origin'], 'https://example.com')
+      .get('/', (res) => { res.end('HI') })
+      .listen(port, async (listenSocket) => {
+        if (!listenSocket) throw new Error('Failed to listen')
+        const res = await req('/')
+        strictEqual(res.headers['access-control-allow-origin'], '*')
+        done()
+      })
+  })
+
+  it('Accept RegExp', (_, done) => {
+    app = cors(App(), {
+      origin: /\.com/g
+    })
+      .get('/', (res) => { res.end('HI') })
+      .listen(port, async (listenSocket) => {
+        if (!listenSocket) throw new Error('Failed to listen')
+        const notAllowed = await req('/', {
+          Origin: 'https://example.org'
+        })
+        strictEqual(notAllowed.headers['access-control-allow-origin'], undefined)
+        const allowed = await req('/', {
+          Origin: 'https://example.com'
+        })
+        strictEqual(allowed.headers['access-control-allow-origin'], 'https://example.com')
+        done()
+      })
   })
 })

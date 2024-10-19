@@ -4,7 +4,7 @@ import { afterEach, describe, it } from 'node:test'
 import { App, type TemplatedApp } from 'uWebSockets.js'
 
 import { cors } from '../src/index'
-import { fetchReq, port, req } from './utils'
+import { port, req } from './utils'
 
 let app: TemplatedApp
 
@@ -13,77 +13,85 @@ describe('Methods', () => {
     app.close()
   })
 
-  it('Accept single methods', async () => {
+  it('Accept single methods', (_, done) => {
     const methods = ['GET']
     app = cors(App(), {
       methods
     })
       .get('/', (res) => { res.end('HI') })
-      .listen(port, () => { })
-
-    const res = await req('/')
-    strictEqual(res.headers['access-control-allow-methods'], methods.join(', '))
+      .listen(port, async (listenSocket) => {
+        if (!listenSocket) throw new Error('Failed to listen')
+        const res = await req('/')
+        strictEqual(res.headers['access-control-allow-methods'], methods.join(', '))
+        done()
+      })
   })
 
-  it('Accept array', async () => {
+  it('Accept array', (_, done) => {
     const methods = ['GET', 'POST']
     app = cors(App(), {
       methods
     })
       .get('/', (res) => { res.end('HI') })
-      .listen(port, () => { })
-
-    const res = await req('/')
-    strictEqual(res.headers['access-control-allow-methods'], methods.join(', '))
+      .listen(port, async (listenSocket) => {
+        if (!listenSocket) throw new Error('Failed to listen')
+        const res = await req('/')
+        strictEqual(res.headers['access-control-allow-methods'], methods.join(', '))
+        done()
+      })
   })
 
-  it('Accept *', async () => {
+  it('Accept *', (_, done) => {
     const methods = '*'
     app = cors(App(), {
       methods
     })
       .get('/', (res) => { res.end('HI') })
-      .listen(port, () => { })
-
-    const res = await req('/')
-    strictEqual(res.headers['access-control-allow-methods'], methods)
+      .listen(port, async (listenSocket) => {
+        if (!listenSocket) throw new Error('Failed to listen')
+        const res = await req('/')
+        strictEqual(res.headers['access-control-allow-methods'], methods)
+        done()
+      })
   })
 
-  it('Mirror request method if set to true', async () => {
-    app = cors(App(), {
-      methods: true
-    })
-      .get('/', (res) => { res.end('HI') })
-      .post('/', (res) => { res.end('HI') })
-      .listen(port, () => { })
-
-    const get = await req('/')
-    strictEqual(get.headers['access-control-allow-methods'], 'get')
-
-    const post = await fetchReq('/', {
-      method: 'POST',
-      credentials: 'include'
-    })
-    strictEqual(post.headers['access-control-allow-methods'], 'post')
-  })
-
-  it('Handle mirror method on preflight options', async () => {
+  it('Handle mirror method on preflight options', (_, done) => {
     app = cors(App(), {
       methods: true
     })
       .get('/', (res) => { res.end('HI') })
       .put('/', (res) => { res.end('HI') })
-      .listen(port, () => { })
+      .listen(port, async (listenSocket) => {
+        if (!listenSocket) throw new Error('Failed to listen')
+        const method = 'PUT'
+        const get = await req('/', {
+          origin: 'http://localhost/',
+          'access-control-request-method': method
+        }, {
+          method: 'OPTIONS',
+          credentials: 'include'
+        })
+        strictEqual(get.headers['access-control-allow-methods'], method)
+        done()
+      })
+  })
 
-    const method = 'PUT'
-    const get = await fetchReq('/', {
-      method: 'OPTIONS',
-      credentials: 'include',
-      headers: {
-        origin: 'http://localhost/',
-        'access-control-request-method': method
-      }
+  it('Mirror request method if set to true', (_, done) => {
+    app = cors(App(), {
+      methods: true
     })
-    strictEqual(get.headers['access-control-allow-methods'], method)
+      .get('/', (res) => { res.end('HI') })
+      .post('/', (res) => { res.end('HI') })
+      .listen(port, async (listenSocket) => {
+        if (!listenSocket) throw new Error('Failed to listen')
+        const get = await req('/')
+        strictEqual(get.headers['access-control-allow-methods'], 'get')
+        const post = await req('/', {}, {
+          method: 'POST',
+          credentials: 'include'
+        })
+        strictEqual(post.headers['access-control-allow-methods'], 'post')
+        done()
+      })
   })
 })

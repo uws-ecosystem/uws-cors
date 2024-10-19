@@ -4,7 +4,7 @@ import { afterEach, describe, it } from 'node:test'
 import { App, type TemplatedApp } from 'uWebSockets.js'
 
 import { cors } from '../src/index'
-import { preflight } from './utils'
+import { port, preflight } from './utils'
 
 let app: TemplatedApp
 
@@ -13,21 +13,27 @@ describe('Max Age', () => {
     app.close()
   })
 
-  it('Set maxage', async () => {
+  it('Set maxage', (_, done) => {
     app = cors(App(), {
       maxAge: 5
     })
-
-    const res = await preflight('/')
-    strictEqual(res.headers['access-control-max-age'], '5')
+      .listen(port, async (listenSocket) => {
+        if (!listenSocket) throw new Error('Failed to listen')
+        const res = await preflight('/')
+        strictEqual(res.headers['access-control-max-age'], '5')
+        done()
+      })
   })
 
-  it('Skip maxage if falsey', async () => {
+  it('Skip maxage if falsey', (_, done) => {
     app = cors(App(), {
       maxAge: 0
     })
-
-    const res = await preflight('/')
-    strictEqual(res.headers['access-control-max-age'], undefined)
+      .listen(port, async (listenSocket) => {
+        if (!listenSocket) throw new Error('Failed to listen')
+        const res = await preflight('/')
+        strictEqual(res.headers['access-control-max-age'], undefined)
+        done()
+      })
   })
 })

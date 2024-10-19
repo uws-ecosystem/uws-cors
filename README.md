@@ -123,8 +123,7 @@ Add `[OPTIONS] /*` handler to handle preflight request which response with `HTTP
 
 ## TODO
 - Unit test
-  - fix `ECONNRESET` error when run multiple unit test (`app.close()` needs to be awaited)
-  - fix `res.end('204')` doesn't work on `preflight.test.ts`
+  - fix status code where `res.end('204')` doesn't work on `preflight.test.ts`
     - `Enable preflight`
     - `Enable preflight on sub path`
 
