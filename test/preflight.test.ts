@@ -13,8 +13,7 @@ describe('Preflight', () => {
     app.close()
   })
 
-  // FAIL: res.status is 200 and not 204
-  it.skip('Enable preflight', (_, done) => {
+  it('Enable preflight', (_, done) => {
     app = cors(App(), {
       preflight: true
     })
@@ -27,8 +26,7 @@ describe('Preflight', () => {
       })
   })
 
-  // FAIL: res.status is 200 and not 204
-  it.skip('Enable preflight on sub path', (_, done) => {
+  it('Enable preflight on sub path', (_, done) => {
     app = cors(App(), {
       preflight: true
     })

@@ -248,6 +248,8 @@ export const cors = (app: TemplatedApp, {
 
   if (preflight) {
     const handleOption = (res: HttpResponse, req: HttpRequest) => {
+      res.writeStatus('204')
+
       handleOrigin(res, req)
       handleMethod(res, req.getHeader('access-control-request-method'))
 
@@ -262,12 +264,10 @@ export const cors = (app: TemplatedApp, {
       if (maxAge)
         res.writeHeader('access-control-max-age', maxAge.toString())
 
-      res.writeStatus('204').end()
+      res.end()
     }
 
-    app
-      .options('/', handleOption)
-      .options('/*', handleOption)
+    app.options('/*', handleOption)
   }
 
   // app.onRequest implementation to handle CORS headers on all HTTP methods

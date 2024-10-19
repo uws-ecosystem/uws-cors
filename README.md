@@ -121,12 +121,6 @@ Add `[OPTIONS] /*` handler to handle preflight request which response with `HTTP
 
 - `boolean` - Available if set to `true`.
 
-## TODO
-- Unit test
-  - fix status code where `res.end('204')` doesn't work on `preflight.test.ts`
-    - `Enable preflight`
-    - `Enable preflight on sub path`
-
 ## License
 
 This project is licensed under the [MIT License](LICENSE).
