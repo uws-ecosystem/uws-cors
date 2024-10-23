@@ -3431,10 +3431,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"uWebSockets.js@github:uNetworking/uWebSockets.js#v20.49.0":
-  version: 20.49.0
-  resolution: "uWebSockets.js@https://github.com/uNetworking/uWebSockets.js.git#commit=442087c0a01bf146acb7386910739ec81df06700"
-  checksum: 10c0/a404642ffaddc274127a44c9b47f4fd1dc604d833f1bce6aa63f7598b0d90762c3cd85bbe9e834b2b63fcb9d8b62bf888825a54762ebc35c6cfb90a4c9febb0a
+"uWebSockets.js@npm:uws-pack@20.0.6":
+  version: 20.0.6
+  resolution: "uws-pack@npm:20.0.6"
+  checksum: 10c0/081148b3235f53decbe59cc355806390c42bb466cf1c9e40931126aa45a23fa50873e930fb4450a43ad9430c038326ce254fb410357651fbd19c2fc886fc0283
   languageName: node
   linkType: hard
 
@@ -3498,7 +3498,7 @@ __metadata:
     tsx: "npm:^4.19.1"
     typescript: "npm:^5.6.3"
     typescript-eslint: "npm:^8.10.0"
-    uWebSockets.js: "github:uNetworking/uWebSockets.js#v20.49.0"
+    uWebSockets.js: "npm:uws-pack@20.0.6"
   peerDependencies:
     uWebSockets.js: "*"
   languageName: unknown
